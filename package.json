@@ -1,0 +1,36 @@
+{
+  "name": "async-local-storage",
+  "description": "",
+  "version": "1.0.0",
+  "author": "Tree Xie <vicansocanbico@gmail.com>",
+  "keywords": [
+    "threadlocal",
+    "call chain"
+  ],
+  "scripts": {
+    "size": "t=\"$(npm pack .)\"; wc -c \"${t}\"; tar tvf \"${t}\"; rm \"${t}\";",
+    "test": "node ./node_modules/.bin/eslint ./lib/*.js && node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./test/*.js --"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vicanso/async-local-storage.git"
+  },
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^3.12.2",
+    "eslint-config-airbnb": "^13.0.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^2.2.3",
+    "eslint-plugin-react": "^6.8.0",
+    "express": "^4.15.2",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.1.0",
+    "supertest": "^3.0.0"
+  },
+  "dependencies": {
+    "nano-seconds": "^1.1.0"
+  }
+}
