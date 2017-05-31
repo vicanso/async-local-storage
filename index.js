@@ -1,21 +1,18 @@
-/**
- * https://github.com/nodejs/diagnostics/tree/master/tracing/AsyncWrap
- */
-'use strict';
-const asyncWrap = process.binding('async_wrap');
+const asyncHooks = require('async_hooks');
 const nano = require('nano-seconds');
 
-const TIMER = asyncWrap.Providers.TIMERWRAP;
-let currentUid = -1;
+const pkg = require('./package');
+const debug = require('debug')(pkg.name);
+
 const map = new Map();
 
 function isUndefined(value) {
-  return value === undefined
+  return value === undefined;
 }
 
 function get(data, key) {
   if (!data) {
-    return;
+    return null;
   }
   const value = data[key];
   if (isUndefined(value) && data.parent) {
@@ -24,66 +21,72 @@ function get(data, key) {
   return value;
 }
 
-function init(uid, provider, parentUid) {
-  if (provider === TIMER) {
-    return;
-  }
-  const parent = map.get(parentUid || currentUid);
-  const data = {
-    create: nano.now(),
-  };
-  if (parent) {
-    data.parent = parent;
-  }
-  map.set(uid, data);
-}
-
-function pre(uid) {
-  if (!map.has(uid)) {
-    return;
-  }
-  currentUid = uid;
-}
-
-function post(uid) {
-  if (!map.has(uid)) {
-    return;
-  }
-  currentUid = -1;
-}
-
-function destroy(uid) {
-  if (!map.has(uid)) {
-    return;
-  }
-  map.delete(uid);
-}
-
-asyncWrap.setupHooks({
-  init,
-  pre,
-  post,
-  destroy,
+let currentId = 0;
+const hooks = asyncHooks.createHook({
+  init: (id, type, triggerId) => {
+    if (type === 'TickObject') {
+      return;
+    }
+    // init, set the created time
+    const data = {
+      created: nano.now(),
+    };
+    const parentId = triggerId || currentId;
+    // not tigger by itself, add parent
+    if (parentId !== id) {
+      const parent = map.get(parentId);
+      if (parent) {
+        data.parent = parent;
+      }
+    }
+    debug(`${id}(${type}) init by ${triggerId}`);
+    map.set(id, data);
+  },
+  /**
+   * Set the current id
+   */
+  before: (id) => {
+    currentId = id;
+  },
+  /**
+   * Remove the data
+   */
+  destroy: (id) => {
+    if (!map.has(id)) {
+      return;
+    }
+    debug(`destroy ${id}`);
+    map.delete(id);
+  },
 });
 
+/**
+ * Enable the async hook
+ */
 exports.enable = () => {
-  asyncWrap.enable();
+  hooks.enable();
 };
 
+
+/**
+ * Disable the async hook
+ */
 exports.disable = () => {
-  asyncWrap.disable();
+  hooks.disable();
 };
 
-exports.use = () => {
-  const data = map.get(currentUid);
-  if (!data) {
-    return -1;
-  }
-  return nano.difference(data.create);
-};
+exports.size = () => map.size;
 
+/**
+ * Set the key/value for this score
+ */
 exports.set = (key, value) => {
-  const data = map.get(currentUid);
+  if (key === 'created' || key === 'paraent') {
+    throw new Error('can\'t set created and parent');
+  }
+  const id = asyncHooks.currentId() || currentId;
+  debug(`set ${key}:${value} to ${id}`);
+  const data = map.get(id);
   if (!data) {
     return false;
   }
@@ -92,6 +95,17 @@ exports.set = (key, value) => {
 };
 
 exports.get = (key) => {
-  const data = map.get(currentUid);
-  return get(data, key);
+  const data = map.get(asyncHooks.currentId() || currentId);
+  const value = get(data, key);
+  debug(`get ${key}:${value} from ${currentId}`);
+  return value;
 };
+
+exports.use = () => {
+  const data = map.get(asyncHooks.currentId() || currentId);
+  if (!data) {
+    return -1;
+  }
+  return nano.difference(data.created);
+};
+

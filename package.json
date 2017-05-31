@@ -1,6 +1,6 @@
 {
   "name": "async-local-storage",
-  "description": "",
+  "description": "Get the value like thread-local storage in threaded programming",
   "version": "1.0.0",
   "author": "Tree Xie <vicansocanbico@gmail.com>",
   "keywords": [
@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "size": "t=\"$(npm pack .)\"; wc -c \"${t}\"; tar tvf \"${t}\"; rm \"${t}\";",
-    "test": "node ./node_modules/.bin/eslint ./lib/*.js && node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./test/*.js --"
+    "test": "node ./node_modules/.bin/eslint ./*.js && node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./test/*.js --"
   },
   "license": "MIT",
   "repository": {
@@ -17,7 +17,7 @@
     "url": "https://github.com/vicanso/async-local-storage.git"
   },
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=8.0.0"
   },
   "devDependencies": {
     "eslint": "^3.12.2",
@@ -25,12 +25,16 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^2.2.3",
     "eslint-plugin-react": "^6.8.0",
-    "express": "^4.15.2",
+    "ioredis": "^3.1.1",
     "istanbul": "^0.4.5",
+    "koa": "^2.2.0",
+    "koa-session": "^5.0.0",
     "mocha": "^3.1.0",
+    "superagent": "^3.5.2",
     "supertest": "^3.0.0"
   },
   "dependencies": {
+    "debug": "^2.6.8",
     "nano-seconds": "^1.1.0"
   }
 }

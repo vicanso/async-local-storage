@@ -1,6 +1,6 @@
 {
   "extends": "airbnb",
   "rules": {
-    "strict": 0
+    "import/no-unresolved": 0
   }
 }
