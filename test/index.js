@@ -38,7 +38,7 @@ class SessionStore {
 const app = new Koa();
 
 const sessionMiddleware = koaSession(app, {
-  store: new SessionStore(new Redis()),
+  store: new SessionStore(new Redis(6379, '127.0.0.1')),
 });
 
 app.use(async (ctx, next) => {
@@ -46,6 +46,7 @@ app.use(async (ctx, next) => {
   als.set('id', id);
   await next();
   assert(als.use());
+  als.remove();
 });
 
 // fs
@@ -152,7 +153,63 @@ describe('async-local-storage', () => {
       }).catch(done);
   });
 
-  it('get the size', () => {
-    assert(als.size());
+  it('loop(20) success', function(done) {
+    this.timeout(120 * 1000);
+    const fns = [];
+    for (let i = 0; i < 20; i += 1) {
+      const id = randomBytes(8);
+      const p = request(server).get('/?fs=true&http=true')
+        .set('X-Request-Id', id)
+        .expect(200)
+        .then((response) => {
+          assert.equal(response.text, id);
+        }).catch(done);
+      fns.push(p);
+    }
+    Promise.all(fns).then(() => done()).catch(done);
+  });
+
+  it('fs settimeout http', (done) => {
+    const id = randomBytes(8);
+    als.set('id', id);
+    delay().then(() => {
+      assert.equal(als.get('id'), id);
+      return readfilePromise(__filename);
+    }).then(() => {
+      assert.equal(als.get('id'), id);
+      return superagent.get('http://www.baidu.com/');
+    }).then(() => {
+      assert.equal(als.get('id'), id);
+      done();
+    }).catch(done);
+  });
+
+  it('get from parent', (done) => {
+    const id = randomBytes(8);
+    als.set('id', id);
+    const check = (times, id, subId) => {
+      assert.equal(als.get('id'), id);
+      assert.equal(als.get('subId'), subId);
+      if (times < 0) {
+        done();
+      } else {
+        setTimeout(() => {
+          check(times - 1, id, subId);
+        }, 10);
+      }
+    };
+    setTimeout(() => {
+      const subId = randomBytes(8);
+      als.set('subId', subId);
+      assert.equal(als.get('id'), id);
+      check(3, id, subId);
+    }, 10);
+  });
+
+  it('get the size', (done) => {
+    setTimeout(function() {
+      assert(als.size()); 
+      done();
+    }, 1000);
   });
 });

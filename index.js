@@ -10,6 +10,12 @@ function isUndefined(value) {
   return value === undefined;
 }
 
+/**
+ * Get data from itself or parent
+ * @param {any} data The map data
+ * @param {any} key The key
+ * @returns {any}
+ */
 function get(data, key) {
   if (!data) {
     return null;
@@ -75,10 +81,16 @@ exports.disable = () => {
   hooks.disable();
 };
 
+/**
+ * Get the size of map
+ */
 exports.size = () => map.size;
 
 /**
  * Set the key/value for this score
+ * @param {String} key The key of value
+ * @param {String} value The value
+ * @returns {Boolean} if sucess, will return true, otherwise false
  */
 exports.set = (key, value) => {
   if (key === 'created' || key === 'paraent') {
@@ -94,6 +106,10 @@ exports.set = (key, value) => {
   return true;
 };
 
+/**
+ * Get the value by key
+ * @param {String} key The key of value
+ */
 exports.get = (key) => {
   const data = map.get(asyncHooks.currentId() || currentId);
   const value = get(data, key);
@@ -101,6 +117,19 @@ exports.get = (key) => {
   return value;
 };
 
+/**
+ * Remove the data of the current id
+ */
+exports.remove = () => {
+  const id = asyncHooks.currentId() || currentId;
+  if (id) {
+    map.delete(id);
+  }
+};
+
+/**
+ * Get the use the of current id
+ */
 exports.use = () => {
   const data = map.get(asyncHooks.currentId() || currentId);
   if (!data) {
@@ -108,4 +137,3 @@ exports.use = () => {
   }
   return nano.difference(data.created);
 };
-
