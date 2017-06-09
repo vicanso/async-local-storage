@@ -17,6 +17,7 @@ function isUndefined(value) {
  * @returns {any}
  */
 function get(data, key) {
+  /* istanbul ignore if */
   if (!data) {
     return null;
   }
@@ -93,12 +94,14 @@ exports.size = () => map.size;
  * @returns {Boolean} if sucess, will return true, otherwise false
  */
 exports.set = (key, value) => {
+  /* istanbul ignore if */
   if (key === 'created' || key === 'paraent') {
     throw new Error('can\'t set created and parent');
   }
   const id = asyncHooks.currentId() || currentId;
   debug(`set ${key}:${value} to ${id}`);
   const data = map.get(id);
+  /* istanbul ignore if */
   if (!data) {
     return false;
   }
@@ -132,6 +135,7 @@ exports.remove = () => {
  */
 exports.use = () => {
   const data = map.get(asyncHooks.currentId() || currentId);
+  /* istanbul ignore if */
   if (!data) {
     return -1;
   }

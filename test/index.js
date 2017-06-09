@@ -209,6 +209,7 @@ describe('async-local-storage', () => {
   it('get the size', (done) => {
     setTimeout(function() {
       assert(als.size()); 
+      als.disable();
       done();
     }, 1000);
   });
