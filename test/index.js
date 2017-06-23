@@ -1,101 +1,20 @@
 const assert = require('assert');
-const Koa = require('koa');
-const Redis = require('ioredis');
-const request = require('supertest');
-const superagent = require('superagent');
 const crypto = require('crypto');
-const util = require('util');
-const koaSession = require('koa-session');
+const request = require('supertest');
 const fs = require('fs');
-const als = require('..');
+const util = require('util');
+const superagent = require('superagent');
 
 const readfilePromise = util.promisify(fs.readFile);
-als.enable();
+const als = require('..');
 
 const randomBytes = length => crypto.randomBytes(length).toString('hex');
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 
-class SessionStore {
-  constructor(redisClient) {
-    this.redisClient = redisClient;
-  }
-  async get(key) {
-    const data = await this.redisClient.get(key);
-    if (!data) {
-      return null;
-    }
-    return JSON.parse(data);
-  }
-  async set(key, json, maxAge) {
-    await this.redisClient.psetex(key, maxAge, JSON.stringify(json));
-  }
-  async destroy(key) {
-    await this.redisClient.del(key);
-  }
-}
-
-const app = new Koa();
-
-const sessionMiddleware = koaSession(app, {
-  store: new SessionStore(new Redis(6379, '127.0.0.1')),
-});
-
-app.use(async (ctx, next) => {
-  const id = ctx.get('X-Request-Id');
-  als.set('id', id);
-  await next();
-  assert(als.use());
-  als.remove();
-});
-
-// fs
-app.use(async (ctx, next) => {
-  assert.equal(als.get('id'), ctx.get('X-Request-Id'));
-  if (ctx.query.fs) {
-    await readfilePromise(__filename);
-  }
-  return next();
-});
-
-// delay
-app.use(async (ctx, next) => {
-  assert.equal(als.get('id'), ctx.get('X-Request-Id'));
-  if (ctx.query.delay) {
-    await delay(100);
-  }
-  return next();
-});
-
-// session
-app.use(async (ctx, next) => {
-  assert.equal(als.get('id'), ctx.get('X-Request-Id'));
-  if (ctx.query.session) {
-    return sessionMiddleware(ctx, next);
-  }
-  return next();
-});
-
-// http
-app.use(async (ctx, next) => {
-  assert.equal(als.get('id'), ctx.get('X-Request-Id'));
-  if (ctx.query.http) {
-    return superagent.get('http://www.baidu.com/').then(() => {
-      assert.equal(als.get('id'), ctx.get('X-Request-Id'));
-      return next();
-    });
-  }
-  return next();
-});
-
-app.use((ctx) => {
-  if (ctx.query.session) {
-    assert(ctx.session);
-  }
-  ctx.body = als.get('id');
-});
-
-const server = app.listen();
+const {
+  server,
+} = require('./support/server');
 
 describe('async-local-storage', () => {
   const check = (url) => {
