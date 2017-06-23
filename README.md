@@ -1,7 +1,7 @@
 # async-local-storage
 
 [![Build Status](https://travis-ci.org/vicanso/async-local-storage.svg?branch=master)](https://travis-ci.org/vicanso/async-local-storage)
-[![Coverage Status](https://img.shields.io/coveralls/vicanso/async-local-storag/master.svg?style=flat)](https://coveralls.io/r/vicanso/async-local-storage?branch=master)
+[![Coverage Status](https://img.shields.io/coveralls/vicanso/async-local-storage/master.svg?style=flat)](https://coveralls.io/r/vicanso/async-local-storage?branch=master)
 [![npm](http://img.shields.io/npm/v/async-local-storage.svg?style=flat-square)](https://www.npmjs.org/package/async-local-storage)
 [![Github Releases](https://img.shields.io/npm/dm/async-local-storage.svg?style=flat-square)](https://github.com/vicanso/async-local-storage)
 
