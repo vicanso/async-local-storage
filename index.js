@@ -30,7 +30,7 @@ function get(data, key) {
 
 let currentId = 0;
 const hooks = asyncHooks.createHook({
-  init: (id, type, triggerId) => {
+  init: function init(id, type, triggerId) {
     if (type === 'TickObject') {
       return;
     }
@@ -52,13 +52,13 @@ const hooks = asyncHooks.createHook({
   /**
    * Set the current id
    */
-  before: (id) => {
+  before: function before(id) {
     currentId = id;
   },
   /**
    * Remove the data
    */
-  destroy: (id) => {
+  destroy: function destroy(id) {
     if (!map.has(id)) {
       return;
     }
@@ -70,17 +70,13 @@ const hooks = asyncHooks.createHook({
 /**
  * Enable the async hook
  */
-exports.enable = () => {
-  hooks.enable();
-};
+exports.enable = () => hooks.enable();
 
 
 /**
  * Disable the async hook
  */
-exports.disable = () => {
-  hooks.disable();
-};
+exports.disable = () => hooks.disable();
 
 /**
  * Get the size of map
@@ -93,7 +89,7 @@ exports.size = () => map.size;
  * @param {String} value The value
  * @returns {Boolean} if sucess, will return true, otherwise false
  */
-exports.set = (key, value) => {
+exports.set = function setValue(key, value) {
   /* istanbul ignore if */
   if (key === 'created' || key === 'paraent') {
     throw new Error('can\'t set created and parent');
@@ -113,7 +109,7 @@ exports.set = (key, value) => {
  * Get the value by key
  * @param {String} key The key of value
  */
-exports.get = (key) => {
+exports.get = function getValue(key) {
   const data = map.get(asyncHooks.currentId() || currentId);
   const value = get(data, key);
   debug(`get ${key}:${value} from ${currentId}`);
@@ -123,7 +119,7 @@ exports.get = (key) => {
 /**
  * Remove the data of the current id
  */
-exports.remove = () => {
+exports.remove = function removeValue() {
   const id = asyncHooks.currentId() || currentId;
   if (id) {
     map.delete(id);
@@ -132,8 +128,9 @@ exports.remove = () => {
 
 /**
  * Get the use the of current id
+ * @returns {Number} The use time(ns) of the current id
  */
-exports.use = () => {
+exports.use = function getUse() {
   const data = map.get(asyncHooks.currentId() || currentId);
   /* istanbul ignore if */
   if (!data) {
