@@ -44,6 +44,7 @@ app.use(async (ctx, next) => {
   await next();
   assert(als.use());
   als.remove();
+  assert(als.currentId());
 });
 
 // fs
@@ -53,6 +54,7 @@ app.use(async (ctx, next) => {
     const buf = await readfilePromise(__filename);
     als.set('buf', buf);
   }
+  assert(als.currentId());
   return next();
 });
 
@@ -62,6 +64,7 @@ app.use(async (ctx, next) => {
   if (ctx.query.delay) {
     await delay(100);
   }
+  assert(als.currentId());
   return next();
 });
 
@@ -71,6 +74,7 @@ app.use(async (ctx, next) => {
   if (ctx.query.session) {
     return sessionMiddleware(ctx, next);
   }
+  assert(als.currentId());
   return next();
 });
 
@@ -83,6 +87,7 @@ app.use(async (ctx, next) => {
       return next();
     });
   }
+  assert(als.currentId());
   return next();
 });
 
@@ -90,6 +95,10 @@ app.use((ctx) => {
   if (ctx.query.session) {
     assert(ctx.session);
   }
+  if (ctx.query.fs) {
+    assert(als.get('buf'));
+  }
+  assert(als.currentId());
   ctx.body = als.get('id');
 });
 

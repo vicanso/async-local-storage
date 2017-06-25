@@ -141,3 +141,8 @@ exports.use = () => {
   }
   return nano.difference(data.created);
 };
+
+/**
+ * Get the current id
+ */
+exports.currentId = () => asyncHooks.currentId() || currentId;

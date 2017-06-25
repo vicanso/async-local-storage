@@ -133,6 +133,19 @@ setTimeout(() => {
 }, 10);
 ```
 
+### currentId
+
+Get the current id
+
+```js
+const assert = require('assert');
+const als = require('async-local-storage');
+als.enable();
+setTimeout(() => {
+  assert(als.currentId());
+}, 10);
+```
+
 ## License
 
 MIT
