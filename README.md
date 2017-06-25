@@ -146,6 +146,19 @@ setTimeout(() => {
 }, 10);
 ```
 
+### use
+
+- `id` The tigger id, default is `als.currentId()`
+
+```js
+const assert = require('assert');
+const als = require('async-local-storage');
+als.enable();
+setTimeout(() => {
+  assert(als.use());
+}, 10);
+```
+
 ## License
 
 MIT

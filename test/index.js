@@ -125,6 +125,18 @@ describe('async-local-storage', () => {
     }, 10);
   });
 
+  it('get the custom id\'s use time', (done) => {
+    let currentId = 0;
+    delay(30).then(() => {
+      currentId = als.currentId();
+      return delay(500);
+    }).then(() => {
+      assert(als.use(currentId));
+      assert(als.use());
+      done();
+    });
+  });
+
   it('get the size', (done) => {
     setTimeout(function() {
       assert(als.size()); 

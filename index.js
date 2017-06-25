@@ -68,10 +68,21 @@ const hooks = asyncHooks.createHook({
 });
 
 /**
+ * Get the current id
+ */
+function getCurrentId() {
+  return asyncHooks.currentId() || currentId;
+}
+
+/**
+ * Get the current id
+ */
+exports.currentId = getCurrentId;
+
+/**
  * Enable the async hook
  */
 exports.enable = () => hooks.enable();
-
 
 /**
  * Disable the async hook
@@ -94,7 +105,7 @@ exports.set = function setValue(key, value) {
   if (key === 'created' || key === 'paraent') {
     throw new Error('can\'t set created and parent');
   }
-  const id = asyncHooks.currentId() || currentId;
+  const id = getCurrentId();
   debug(`set ${key}:${value} to ${id}`);
   const data = map.get(id);
   /* istanbul ignore if */
@@ -110,7 +121,7 @@ exports.set = function setValue(key, value) {
  * @param {String} key The key of value
  */
 exports.get = function getValue(key) {
-  const data = map.get(asyncHooks.currentId() || currentId);
+  const data = map.get(getCurrentId());
   const value = get(data, key);
   debug(`get ${key}:${value} from ${currentId}`);
   return value;
@@ -120,26 +131,22 @@ exports.get = function getValue(key) {
  * Remove the data of the current id
  */
 exports.remove = function removeValue() {
-  const id = asyncHooks.currentId() || currentId;
+  const id = getCurrentId();
   if (id) {
     map.delete(id);
   }
 };
 
 /**
- * Get the use the of current id
+ * Get the use the of id
+ * @param {Number} id The tigger id, is optional, default is `als.currentId()`
  * @returns {Number} The use time(ns) of the current id
  */
-exports.use = function getUse() {
-  const data = map.get(asyncHooks.currentId() || currentId);
+exports.use = function getUse(id) {
+  const data = map.get(id || getCurrentId());
   /* istanbul ignore if */
   if (!data) {
     return -1;
   }
   return nano.difference(data.created);
 };
-
-/**
- * Get the current id
- */
-exports.currentId = () => asyncHooks.currentId() || currentId;
