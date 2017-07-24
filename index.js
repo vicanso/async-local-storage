@@ -71,6 +71,9 @@ const hooks = asyncHooks.createHook({
  * Get the current id
  */
 function getCurrentId() {
+  if (asyncHooks.executionAsyncId) {
+    return asyncHooks.executionAsyncId();
+  }
   return asyncHooks.currentId() || currentId;
 }
 
