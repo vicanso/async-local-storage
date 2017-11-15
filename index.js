@@ -39,7 +39,7 @@ const hooks = asyncHooks.createHook({
       created: nano.now(),
     };
     const parentId = triggerId || currentId;
-    // not tigger by itself, add parent
+    // not trigger by itself, add parent
     if (parentId !== id) {
       const parent = map.get(parentId);
       if (parent) {
@@ -101,11 +101,11 @@ exports.size = () => map.size;
  * Set the key/value for this score
  * @param {String} key The key of value
  * @param {String} value The value
- * @returns {Boolean} if sucess, will return true, otherwise false
+ * @returns {Boolean} if success, will return true, otherwise false
  */
 exports.set = function setValue(key, value) {
   /* istanbul ignore if */
-  if (key === 'created' || key === 'paraent') {
+  if (key === 'created' || key === 'parent') {
     throw new Error('can\'t set created and parent');
   }
   const id = getCurrentId();
@@ -142,7 +142,7 @@ exports.remove = function removeValue() {
 
 /**
  * Get the use the of id
- * @param {Number} id The tigger id, is optional, default is `als.currentId()`
+ * @param {Number} id The trigger id, is optional, default is `als.currentId()`
  * @returns {Number} The use time(ns) of the current id
  */
 exports.use = function getUse(id) {
