@@ -68,6 +68,17 @@ app.use(async (ctx, next) => {
   return next();
 });
 
+// next tick
+app.use(async (ctx, next) => {
+  await new Promise((resolve) => {
+    process.nextTick(() => {
+      assert.equal(als.get('id'), ctx.get('X-Request-Id'));
+      resolve();
+    });
+  });
+  return next();
+});
+
 // session
 app.use(async (ctx, next) => {
   assert.equal(als.get('id'), ctx.get('X-Request-Id'));

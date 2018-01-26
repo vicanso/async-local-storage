@@ -25,7 +25,21 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   setTimeout(() => {
     console.info(`set timeout function: ${als.get('name')}`);
-  }, 100);
+  }, 10);
+  next();
+});
+
+app.use((req, res, next) => {
+  setImmediate(() => {
+    console.info(`set immediate function: ${als.get('name')}`);
+  });
+  next();
+});
+
+app.use((req, res, next) => {
+  process.nextTick(() => {
+    console.info(`next tick function: ${als.get('name')}`);
+  });
   next();
 });
 

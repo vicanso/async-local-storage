@@ -31,9 +31,6 @@ function get(data, key) {
 let currentId = 0;
 const hooks = asyncHooks.createHook({
   init: function init(id, type, triggerId) {
-    if (type === 'TickObject') {
-      return;
-    }
     // init, set the created time
     const data = {
       created: nano.now(),

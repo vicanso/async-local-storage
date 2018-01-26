@@ -22,7 +22,20 @@ app.use((ctx, next) => {
 app.use((ctx, next) => {
   setTimeout(() => {
     console.info(`set timeout function: ${als.get('name')}`);
-  }, 100);
+  }, 10);
+  return next();
+});
+app.use((ctx, next) => {
+  setImmediate(() => {
+    console.info(`set immediate function: ${als.get('name')}`);
+  });
+  return next();
+});
+
+app.use((ctx, next) => {
+  process.nextTick(() => {
+    console.info(`next tick function: ${als.get('name')}`);
+  });
   return next();
 });
 app.use((ctx, next) => {
@@ -43,7 +56,7 @@ app.use((ctx, next) => {
 });
 
 app.use(async (ctx, next) => {
-  const res = await request.get('https://www.baidu.com/');
+  await request.get('https://www.baidu.com/');
   console.info(`await http request: ${als.get('name')}`);
   return next();
 });
@@ -61,3 +74,4 @@ app.use((ctx) => {
 });
 
 app.listen(3015);
+console.info('http://127.0.0.1:3015/');
