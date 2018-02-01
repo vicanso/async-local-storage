@@ -137,6 +137,18 @@ describe('async-local-storage', () => {
     });
   });
 
+  it('set to linked top data', (done) => {
+    als.set('top', 'abc');
+    setImmediate(() => {
+      als.set('immediate', true, true);
+    });
+    setTimeout(() => {
+      assert.equal(als.get('top'), 'abc');
+      assert.equal(als.get('immediate'), true);
+      done();
+    }, 10);
+  });
+
   it('get the size', (done) => {
     setTimeout(function() {
       assert(als.size()); 

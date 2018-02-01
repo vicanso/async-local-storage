@@ -6,6 +6,8 @@ const debug = require('debug')(pkg.name);
 
 const map = new Map();
 
+let defaultLinkedTop = false;
+
 function isUndefined(value) {
   return value === undefined;
 }
@@ -26,6 +28,17 @@ function get(data, key) {
     return get(data.parent, key);
   }
   return value;
+}
+
+
+/**
+ * Get the top data
+ */
+function getTop(data) {
+  if (!data.parent) {
+    return data;
+  }
+  return getTop(data.parent);
 }
 
 let currentId = 0;
@@ -95,22 +108,45 @@ exports.disable = () => hooks.disable();
 exports.size = () => map.size;
 
 /**
+ * Enable linked top
+ */
+exports.enableLinkedTop = () => {
+  defaultLinkedTop = true;
+};
+
+/**
+ * Disable linked top
+ */
+exports.disableLinkedTop = () => {
+  defaultLinkedTop = false;
+};
+
+
+/**
  * Set the key/value for this score
  * @param {String} key The key of value
  * @param {String} value The value
+ * @param {Boolean} linkedTop The value linked to top
  * @returns {Boolean} if success, will return true, otherwise false
  */
-exports.set = function setValue(key, value) {
+exports.set = function setValue(key, value, linkedTop) {
   /* istanbul ignore if */
   if (key === 'created' || key === 'parent') {
     throw new Error('can\'t set created and parent');
   }
   const id = getCurrentId();
   debug(`set ${key}:${value} to ${id}`);
-  const data = map.get(id);
+  let data = map.get(id);
   /* istanbul ignore if */
   if (!data) {
     return false;
+  }
+  let setToLinkedTop = linkedTop;
+  if (isUndefined(linkedTop)) {
+    setToLinkedTop = defaultLinkedTop;
+  }
+  if (setToLinkedTop) {
+    data = getTop(data);
   }
   data[key] = value;
   return true;

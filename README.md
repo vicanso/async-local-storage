@@ -66,6 +66,7 @@ set the value by key for the current id
 
 - `key` the key
 - `value` the value
+- `linkedTop` set the value linked to top
 
 ```js
 const assert = require('assert');
@@ -158,6 +159,14 @@ setTimeout(() => {
   assert(als.use());
 }, 10);
 ```
+
+### enableLinkedTop
+
+Enable all value linked to top
+
+### disableLinkedTop
+
+Disable all value linked to top
 
 ## License
 

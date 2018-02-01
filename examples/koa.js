@@ -27,6 +27,7 @@ app.use((ctx, next) => {
 });
 app.use((ctx, next) => {
   setImmediate(() => {
+    als.set('immediate', true, true);
     console.info(`set immediate function: ${als.get('name')}`);
   });
   return next();
@@ -63,6 +64,7 @@ app.use(async (ctx, next) => {
 
 app.use((ctx, next) => {
   return request.get('https://www.baidu.com/').then(() => {
+    console.info(`get immediate from top:${als.get('immediate')}`);
     console.info(`promise function: ${als.get('name')}`);
     return next();
   });
