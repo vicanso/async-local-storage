@@ -1,10 +1,20 @@
 const asyncHooks = require('async_hooks');
 const nano = require('nano-seconds');
+const util = require('util');
+const fs = require('fs');
 
-const pkg = require('./package');
-const debug = require('debug')(pkg.name);
 
 const map = new Map();
+
+const enabledDebug = process.env.DEBUG === 'als';
+
+function debug(...args) {
+  if (!enabledDebug) {
+    return;
+  }
+  // use a function like this one when debugging inside an AsyncHooks callback
+  fs.writeSync(1, `${util.format(...args)}\n`);
+}
 
 let defaultLinkedTop = false;
 
