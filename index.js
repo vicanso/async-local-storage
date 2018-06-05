@@ -3,7 +3,6 @@ const nano = require('nano-seconds');
 const util = require('util');
 const fs = require('fs');
 
-
 const map = new Map();
 
 const enabledDebug = process.env.DEBUG === 'als';
@@ -45,10 +44,10 @@ function get(data, key) {
  * Get the top data
  */
 function getTop(data) {
-  if (!data.parent) {
-    return data;
+  while (data.parent) {
+     data = data.parent
   }
-  return getTop(data.parent);
+  return data
 }
 
 let currentId = 0;
@@ -66,7 +65,7 @@ const hooks = asyncHooks.createHook({
         data.parent = parent;
       }
     }
-    debug(`${id}(${type}) init by ${triggerId}`);
+    debug('%d(%s) init by %d', id, type, triggerId);
     map.set(id, data);
   },
   /**
@@ -82,7 +81,7 @@ const hooks = asyncHooks.createHook({
     if (!map.has(id)) {
       return;
     }
-    debug(`destroy ${id}`);
+    debug('destroy %d', id);
     map.delete(id);
   },
 });
@@ -135,8 +134,8 @@ exports.disableLinkedTop = () => {
 /**
  * Set the key/value for this score
  * @param {String} key The key of value
- * @param {String} value The value
- * @param {Boolean} linkedTop The value linked to top
+ * @param {any} value The value
+ * @param {Boolean} [linkedTop] The value linked to top
  * @returns {Boolean} if success, will return true, otherwise false
  */
 exports.set = function setValue(key, value, linkedTop) {
@@ -145,7 +144,7 @@ exports.set = function setValue(key, value, linkedTop) {
     throw new Error('can\'t set created and parent');
   }
   const id = getCurrentId();
-  debug(`set ${key}:${value} to ${id}`);
+  debug('set %s:%j to %d', key, value, id);
   let data = map.get(id);
   /* istanbul ignore if */
   if (!data) {
@@ -169,7 +168,7 @@ exports.set = function setValue(key, value, linkedTop) {
 exports.get = function getValue(key) {
   const data = map.get(getCurrentId());
   const value = get(data, key);
-  debug(`get ${key}:${value} from ${currentId}`);
+  debug('get %s:%j from %d', key, value, currentId);
   return value;
 };
 
