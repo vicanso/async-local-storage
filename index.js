@@ -65,7 +65,7 @@ const hooks = asyncHooks.createHook({
         data.parent = parent;
       }
     }
-    debug('%d($s) init by %d', id, type, triggerId);
+    debug('%d(%s) init by %d', id, type, triggerId);
     map.set(id, data);
   },
   /**
