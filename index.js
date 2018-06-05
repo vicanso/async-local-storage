@@ -65,7 +65,7 @@ const hooks = asyncHooks.createHook({
         data.parent = parent;
       }
     }
-    debug(`${id}(${type}) init by ${triggerId}`);
+    debug('%d($s) init by %d', id, type, triggerId);
     map.set(id, data);
   },
   /**
@@ -81,7 +81,7 @@ const hooks = asyncHooks.createHook({
     if (!map.has(id)) {
       return;
     }
-    debug(`destroy ${id}`);
+    debug('destroy %d', id);
     map.delete(id);
   },
 });
