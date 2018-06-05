@@ -45,10 +45,10 @@ function get(data, key) {
  * Get the top data
  */
 function getTop(data) {
-  if (!data.parent) {
-    return data;
+  while (data.parent) {
+     data = data.parent
   }
-  return getTop(data.parent);
+  return data
 }
 
 let currentId = 0;
