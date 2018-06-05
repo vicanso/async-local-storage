@@ -136,7 +136,7 @@ exports.disableLinkedTop = () => {
  * Set the key/value for this score
  * @param {String} key The key of value
  * @param {String} value The value
- * @param {Boolean} linkedTop The value linked to top
+ * @param {Boolean} [linkedTop] The value linked to top
  * @returns {Boolean} if success, will return true, otherwise false
  */
 exports.set = function setValue(key, value, linkedTop) {
