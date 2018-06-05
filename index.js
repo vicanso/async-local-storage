@@ -3,7 +3,6 @@ const nano = require('nano-seconds');
 const util = require('util');
 const fs = require('fs');
 
-
 const map = new Map();
 
 const enabledDebug = process.env.DEBUG === 'als';
@@ -135,7 +134,7 @@ exports.disableLinkedTop = () => {
 /**
  * Set the key/value for this score
  * @param {String} key The key of value
- * @param {String} value The value
+ * @param {any} value The value
  * @param {Boolean} [linkedTop] The value linked to top
  * @returns {Boolean} if success, will return true, otherwise false
  */
