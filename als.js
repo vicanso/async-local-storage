@@ -3,7 +3,6 @@ const nano = require('nano-seconds');
 const util = require('util');
 const fs = require('fs');
 
-
 const map = new Map();
 
 const enabledDebug = process.env.DEBUG === 'als';
@@ -33,22 +32,24 @@ function get(data, key) {
   if (!data) {
     return null;
   }
-  const value = data[key];
-  if (isUndefined(value) && data.parent) {
-    return get(data.parent, key);
+  let currentData = data;
+  let value = currentData[key];
+  while (isUndefined(value) && currentData.parent) {
+    currentData = currentData.parent;
+    value = currentData[key];
   }
   return value;
 }
-
 
 /**
  * Get the top data
  */
 function getTop(data) {
-  if (!data.parent) {
-    return data;
+  let result = data;
+  while (result && result.parent) {
+    result = result.parent;
   }
-  return getTop(data.parent);
+  return result;
 }
 
 let currentId = 0;
@@ -131,7 +132,6 @@ exports.disableLinkedTop = () => {
   defaultLinkedTop = false;
 };
 
-
 /**
  * Set the key/value for this score
  * @param {String} key The key of value
@@ -142,7 +142,7 @@ exports.disableLinkedTop = () => {
 exports.set = function setValue(key, value, linkedTop) {
   /* istanbul ignore if */
   if (key === 'created' || key === 'parent') {
-    throw new Error('can\'t set created and parent');
+    throw new Error("can't set created and parent");
   }
   const id = getCurrentId();
   debug(`set ${key}:${value} to ${id}`);
@@ -174,6 +174,11 @@ exports.get = function getValue(key) {
 };
 
 /**
+ * 获取当前current data
+ */
+exports.getCurrentData = () => map.get(getCurrentId());
+
+/**
  * Remove the data of the current id
  */
 exports.remove = function removeValue() {
@@ -195,4 +200,20 @@ exports.use = function getUse(id) {
     return -1;
   }
   return nano.difference(data.created);
+};
+
+/**
+ * Get the top value
+ */
+exports.top = function top() {
+  const data = map.get(getCurrentId());
+  return getTop(data);
+};
+
+/**
+ * Set the scope (it will change the top)
+ */
+exports.scope = function scope() {
+  const data = map.get(getCurrentId());
+  delete data.parent;
 };

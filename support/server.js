@@ -5,7 +5,8 @@ const superagent = require('superagent');
 const util = require('util');
 const koaSession = require('koa-session');
 const fs = require('fs');
-const als = require('../..');
+
+const als = require('../als');
 
 const readfilePromise = util.promisify(fs.readFile);
 als.enable();
@@ -33,17 +34,17 @@ class SessionStore {
 }
 
 const app = new Koa();
+const redisClient = new Redis(6379, '127.0.0.1');
 
 const sessionMiddleware = koaSession(app, {
-  store: new SessionStore(new Redis(6379, '127.0.0.1')),
+  store: new SessionStore(redisClient),
 });
 
 app.use(async (ctx, next) => {
   const id = ctx.get('X-Request-Id');
+  als.scope();
   als.set('id', id);
   await next();
-  assert(als.use());
-  als.remove();
   assert(als.currentId());
 });
 
@@ -116,3 +117,4 @@ app.use((ctx) => {
 const server = app.listen();
 
 exports.server = server;
+exports.redisClient = redisClient;
