@@ -206,7 +206,6 @@ describe('linked top', () => {
     als.scope();
     const id = randomBytes();
     const user = randomBytes();
-    als.scope();
     als.set('id', id);
     return delay(10).then(() => {
       const fn1 = delay(10).then(() => {
@@ -220,6 +219,21 @@ describe('linked top', () => {
       return Promise.all([fn1, fn2]);
     }).then(() => {
       expect(als.get('id')).toBe(id);
+      expect(als.get('user')).toBe(user);
+    });
+  });
+
+  test('set value to self scope', () => {
+    als.scope();
+    const id = randomBytes();
+    const user = randomBytes();
+    als.set('id', id);
+    return delay(10).then(() => {
+      expect(als.get('id')).toBe(id);
+      als.set('id', 'a');
+      als.set('user', user);
+    }).then(() => {
+      expect(als.get('id')).toBe('a');
       expect(als.get('user')).toBe(user);
     });
   });
@@ -247,7 +261,7 @@ describe('get use', () => {
     const id = als.currentId();
     return delay(10).then(() => {
       const use = als.use(id);
-      expect(use).toBeGreaterThanOrEqual(10 * 1000 * 1000);
+      expect(use).toBeGreaterThanOrEqual(9 * 1000 * 1000);
     });
   });
 });
