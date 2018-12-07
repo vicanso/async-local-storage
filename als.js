@@ -179,6 +179,19 @@ exports.get = function getValue(key) {
 exports.getCurrentData = () => map.get(getCurrentId());
 
 /**
+ * Get the value by key from parent
+ * @param {String} key The key of value
+ */
+exports.getFromParent = (key) => {
+  const currentData = map.get(getCurrentId());
+  if (!currentData) {
+    return null
+  }
+  const value = get({ parent: currentData.parent }, key)
+  return value
+}
+
+/**
  * Remove the data of the current id
  */
 exports.remove = function removeValue() {

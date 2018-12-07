@@ -297,3 +297,60 @@ describe('koa', () => {
 
   test('get request id(all)', () => check('/?fs=true&delay=true&http=true&session=true'))
 });
+
+describe('getFromParent', () => {
+  test('top', () => {
+    als.scope()
+    let id = als.getFromParent('id')
+    expect(id).toBe(undefined);
+    als.set('id', 1);
+    id = als.getFromParent('id')
+    expect(id).toBe(undefined);
+  })
+  describe('1 level', () => {
+    test('single', () => {
+      als.scope()
+      als.set('id', 1);
+      return delay(10).then(() => {
+        expect(als.getFromParent('id')).toBe(1)
+        als.set('id', 2)
+        expect(als.getFromParent('id')).toBe(1)
+        expect(als.get('id')).toBe(2)
+      })
+    })
+    test('multiple', () => {
+      als.scope()
+      als.set('id', 1);
+      return Promise.all([
+        delay(10).then(() => {
+          expect(als.getFromParent('id')).toBe(1)
+          als.set('id', 2)
+          expect(als.getFromParent('id')).toBe(1)
+          expect(als.get('id')).toBe(2)
+        }),
+        delay(10).then(() => {
+          expect(als.getFromParent('id')).toBe(1)
+          als.set('id', 3)
+          expect(als.getFromParent('id')).toBe(1)
+          expect(als.get('id')).toBe(3)
+        }),
+      ]).then(() => {
+        expect(als.get('id')).toBe(1)
+      })
+    })
+  })
+  test('2 level', () => {
+    als.scope()
+    als.set('id', 1);
+    return delay(10).then(() => {
+      als.set('key2', 1)
+      return delay(10).then(() => {
+        expect(als.get('key2')).toBe(1)
+        expect(als.getFromParent('id')).toBe(1)
+        als.set('id', 2)
+        expect(als.getFromParent('id')).toBe(1)
+        expect(als.get('id')).toBe(2)
+      })
+    })
+  })
+})
