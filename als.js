@@ -179,6 +179,18 @@ exports.get = function getValue(key) {
 exports.getCurrentData = () => map.get(getCurrentId());
 
 /**
+ * 获取上级 data
+ */
+exports.getFromParent = (key) => {
+  const currentData = map.get(getCurrentId());
+  if (!currentData) {
+    return null
+  }
+  const value = get({ parent: currentData.parent }, key)
+  return value
+}
+
+/**
  * Remove the data of the current id
  */
 exports.remove = function removeValue() {
