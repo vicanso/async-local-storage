@@ -179,7 +179,8 @@ exports.get = function getValue(key) {
 exports.getCurrentData = () => map.get(getCurrentId());
 
 /**
- * 获取上级 data
+ * Get the value by key from parent
+ * @param {String} key The key of value
  */
 exports.getFromParent = (key) => {
   const currentData = map.get(getCurrentId());
