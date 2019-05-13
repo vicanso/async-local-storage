@@ -7,10 +7,7 @@ const http = require('http');
 const request = require('supertest');
 
 const als = require('./als');
-const {
-  server,
-  redisClient,
-} = require('./support/server');
+const {server, redisClient} = require('./support/server');
 
 const topList = [];
 
@@ -31,7 +28,7 @@ afterAll(() => {
   server.close();
   const ids = [];
   let err = null;
-  topList.forEach((item) => {
+  topList.forEach(item => {
     if (ids.indexOf(item.id) !== -1) {
       err = new Error('the id should be unique');
     } else {
@@ -88,7 +85,7 @@ describe('fs', () => {
     expect(als.get('id')).toBe(id);
     await readFile(file);
     expect(als.get('id')).toBe(id);
-        topList.push(als.top());
+    topList.push(als.top());
   });
 });
 
@@ -149,7 +146,7 @@ describe('dns', () => {
     als.set('id', id);
     await lookup('www.baidu.com');
     expect(als.get('id')).toBe(id);
-        topList.push(als.top());
+    topList.push(als.top());
   });
 
   test('get name info promise', () => {
@@ -171,7 +168,7 @@ describe('dns', () => {
     als.set('id', id);
     await lookupService('127.0.0.1', 80);
     expect(als.get('id')).toBe(id);
-        topList.push(als.top());
+    topList.push(als.top());
   });
 });
 
@@ -196,7 +193,7 @@ describe('http', () => {
         .on('error', reject);
     }).then(() => {
       expect(als.get('id')).toBe(id);
-        topList.push(als.top());
+      topList.push(als.top());
     });
   });
 });
@@ -207,20 +204,22 @@ describe('linked top', () => {
     const id = randomBytes();
     const user = randomBytes();
     als.set('id', id);
-    return delay(10).then(() => {
-      const fn1 = delay(10).then(() => {
-        const current = als.getCurrentData();
-        expect(current.user).toBeUndefined();
+    return delay(10)
+      .then(() => {
+        const fn1 = delay(10).then(() => {
+          const current = als.getCurrentData();
+          expect(current.user).toBeUndefined();
+        });
+        const fn2 = new Promise(resolve => {
+          als.set('user', user);
+          resolve();
+        });
+        return Promise.all([fn1, fn2]);
+      })
+      .then(() => {
+        expect(als.get('id')).toBe(id);
+        expect(als.get('user')).toBe(user);
       });
-      const fn2 = new Promise((resolve) => {
-        als.set('user', user);
-        resolve();
-      });
-      return Promise.all([fn1, fn2]);
-    }).then(() => {
-      expect(als.get('id')).toBe(id);
-      expect(als.get('user')).toBe(user);
-    });
   });
 
   test('set value to self scope', () => {
@@ -228,14 +227,16 @@ describe('linked top', () => {
     const id = randomBytes();
     const user = randomBytes();
     als.set('id', id);
-    return delay(10).then(() => {
-      expect(als.get('id')).toBe(id);
-      als.set('id', 'a');
-      als.set('user', user);
-    }).then(() => {
-      expect(als.get('id')).toBe('a');
-      expect(als.get('user')).toBe(user);
-    });
+    return delay(10)
+      .then(() => {
+        expect(als.get('id')).toBe(id);
+        als.set('id', 'a');
+        als.set('user', user);
+      })
+      .then(() => {
+        expect(als.get('id')).toBe('a');
+        expect(als.get('user')).toBe(user);
+      });
   });
 
   test('enableLinkedTop', () => {
@@ -245,13 +246,15 @@ describe('linked top', () => {
     als.enableLinkedTop();
     als.set('id', id);
     const current = als.getCurrentData();
-    return delay(10).then(() => {
-      als.set('user', user);
-    }).then(() => {
-      expect(current.id).toBe(id);
-      expect(current.user).toBe(user);
-      als.disableLinkedTop();
-    });
+    return delay(10)
+      .then(() => {
+        als.set('user', user);
+      })
+      .then(() => {
+        expect(current.id).toBe(id);
+        expect(current.user).toBe(user);
+        als.disableLinkedTop();
+      });
   });
 });
 
@@ -273,13 +276,14 @@ describe('size', () => {
 });
 
 describe('koa', () => {
-  const check = (url) => {
+  const check = url => {
     const fns = [1, 2, 3, 4, 5].map(() => {
       const id = randomBytes(8);
-      return request(server).get(url)
+      return request(server)
+        .get(url)
         .set('X-Request-Id', id)
         .expect(200)
-        .then((response) => {
+        .then(response => {
           expect(response.text).toBe(id);
         });
     });
@@ -295,62 +299,67 @@ describe('koa', () => {
 
   test('get request id(session)', () => check('/?session=true'));
 
-  test('get request id(all)', () => check('/?fs=true&delay=true&http=true&session=true'))
+  test('get request id(all)', () =>
+    check('/?fs=true&delay=true&http=true&session=true'));
 });
 
 describe('getFromParent', () => {
   test('top', () => {
-    als.scope()
-    let id = als.getFromParent('id')
+    als.scope();
+    let id = als.getFromParent('id');
     expect(id).toBe(undefined);
     als.set('id', 1);
-    id = als.getFromParent('id')
+    id = als.getFromParent('id');
     expect(id).toBe(undefined);
-  })
+  });
   describe('1 level', () => {
     test('single', () => {
-      als.scope()
+      als.scope();
       als.set('id', 1);
       return delay(10).then(() => {
-        expect(als.getFromParent('id')).toBe(1)
-        als.set('id', 2)
-        expect(als.getFromParent('id')).toBe(1)
-        expect(als.get('id')).toBe(2)
-      })
-    })
+        expect(als.getFromParent('id')).toBe(1);
+        als.set('id', 2);
+        expect(als.getFromParent('id')).toBe(1);
+        expect(als.get('id')).toBe(2);
+      });
+    });
     test('multiple', () => {
-      als.scope()
+      als.scope();
       als.set('id', 1);
       return Promise.all([
         delay(10).then(() => {
-          expect(als.getFromParent('id')).toBe(1)
-          als.set('id', 2)
-          expect(als.getFromParent('id')).toBe(1)
-          expect(als.get('id')).toBe(2)
+          expect(als.getFromParent('id')).toBe(1);
+          als.set('id', 2);
+          expect(als.getFromParent('id')).toBe(1);
+          expect(als.get('id')).toBe(2);
         }),
         delay(10).then(() => {
-          expect(als.getFromParent('id')).toBe(1)
-          als.set('id', 3)
-          expect(als.getFromParent('id')).toBe(1)
-          expect(als.get('id')).toBe(3)
+          expect(als.getFromParent('id')).toBe(1);
+          als.set('id', 3);
+          expect(als.getFromParent('id')).toBe(1);
+          expect(als.get('id')).toBe(3);
         }),
       ]).then(() => {
-        expect(als.get('id')).toBe(1)
-      })
-    })
-  })
+        expect(als.get('id')).toBe(1);
+      });
+    });
+  });
   test('2 level', () => {
-    als.scope()
+    als.scope();
     als.set('id', 1);
     return delay(10).then(() => {
-      als.set('key2', 1)
+      als.set('key2', 1);
       return delay(10).then(() => {
-        expect(als.get('key2')).toBe(1)
-        expect(als.getFromParent('id')).toBe(1)
-        als.set('id', 2)
-        expect(als.getFromParent('id')).toBe(1)
-        expect(als.get('id')).toBe(2)
-      })
-    })
-  })
-})
+        expect(als.get('key2')).toBe(1);
+        expect(als.getFromParent('id')).toBe(1);
+        als.set('id', 2);
+        expect(als.getFromParent('id')).toBe(1);
+        expect(als.get('id')).toBe(2);
+      });
+    });
+  });
+});
+
+describe('get all data', () => {
+  expect(als.getAllData()).toBeDefined();
+});

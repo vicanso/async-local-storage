@@ -182,14 +182,14 @@ exports.getCurrentData = () => map.get(getCurrentId());
  * Get the value by key from parent
  * @param {String} key The key of value
  */
-exports.getFromParent = (key) => {
+exports.getFromParent = key => {
   const currentData = map.get(getCurrentId());
   if (!currentData) {
-    return null
+    return null;
   }
-  const value = get({ parent: currentData.parent }, key)
-  return value
-}
+  const value = get({parent: currentData.parent}, key);
+  return value;
+};
 
 /**
  * Remove the data of the current id
@@ -229,4 +229,11 @@ exports.top = function top() {
 exports.scope = function scope() {
   const data = map.get(getCurrentId());
   delete data.parent;
+};
+
+/**
+ * Get all data of async locatl storage, please don't modify the data
+ */
+exports.getAllData = function getAllData() {
+  return map;
 };
