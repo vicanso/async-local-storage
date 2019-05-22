@@ -16,6 +16,7 @@ function debug(...args) {
 }
 
 let defaultLinkedTop = false;
+let enabledCreatedAt = true;
 
 function isUndefined(value) {
   return value === undefined;
@@ -55,10 +56,11 @@ function getTop(data) {
 let currentId = 0;
 const hooks = asyncHooks.createHook({
   init: function init(id, type, triggerId) {
+    const data = {};
     // init, set the created time
-    const data = {
-      created: nano.now(),
-    };
+    if (enabledCreatedAt) {
+      data.created = nano.now();
+    }
     const parentId = triggerId || currentId;
     // not trigger by itself, add parent
     if (parentId !== id) {
@@ -209,7 +211,7 @@ exports.remove = function removeValue() {
 exports.use = function getUse(id) {
   const data = map.get(id || getCurrentId());
   /* istanbul ignore if */
-  if (!data) {
+  if (!data || !enabledCreatedAt) {
     return -1;
   }
   return nano.difference(data.created);
@@ -236,4 +238,18 @@ exports.scope = function scope() {
  */
 exports.getAllData = function getAllData() {
   return map;
+};
+
+/**
+ * Enable the create time of data
+ */
+exports.enableCreateTime = function enableCreateTime() {
+  enabledCreatedAt = true;
+};
+
+/**
+ * Disable the create time of data
+ */
+exports.disableCreateTime = function disableCreateTime() {
+  enabledCreatedAt = false;
 };

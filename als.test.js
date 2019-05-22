@@ -261,10 +261,16 @@ describe('linked top', () => {
 describe('get use', () => {
   test('use', () => {
     als.scope();
-    const id = als.currentId();
+    let id = als.currentId();
     return delay(10).then(() => {
       const use = als.use(id);
       expect(use).toBeGreaterThanOrEqual(9 * 1000 * 1000);
+      id = als.currentId();
+      als.disableCreateTime();
+      return delay(10);
+    }).then(() => {
+      const use = als.use(id);
+      expect(use).toBe(-1);
     });
   });
 });

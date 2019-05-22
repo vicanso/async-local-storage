@@ -192,3 +192,18 @@ setTimeout(() => {
 }, 10);
 ```
 
+### enableCreateTime
+
+enable create time of data, default is enabled.
+
+```js
+als.enableCreateTime();
+```
+
+### disableCreateTime
+
+disable create time of data, it can save memory.
+
+```js
+als.disableCreateTime();
+```
