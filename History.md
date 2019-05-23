@@ -1,3 +1,11 @@
+# 2.3.0
+
+* support enable/disable create time for save memory 
+
+# 2.2.0
+
+* add getAllData function
+
 # 2.1.0
 
 * Support getParentData
