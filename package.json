@@ -1,7 +1,7 @@
 {
   "name": "async-local-storage",
   "description": "Get the value like thread-local storage in threaded programming",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "author": "Tree Xie <vicansocanbico@gmail.com>",
   "keywords": [
     "threadlocal",
