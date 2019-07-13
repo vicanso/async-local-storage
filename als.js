@@ -136,10 +136,10 @@ exports.disableLinkedTop = () => {
 
 /**
  * Set the key/value for this score
- * @param {String} key The key of value
- * @param {String} value The value
- * @param {Boolean} linkedTop The value linked to top
- * @returns {Boolean} if success, will return true, otherwise false
+ * @param key {string} key The key of value
+ * @param value {*} value The value
+ * @param linkedTop {boolean} linkedTop The value linked to top
+ * @returns {boolean} if success, will return true, otherwise false
  */
 exports.set = function setValue(key, value, linkedTop) {
   /* istanbul ignore if */
@@ -164,9 +164,11 @@ exports.set = function setValue(key, value, linkedTop) {
   return true;
 };
 
+
 /**
  * Get the value by key
- * @param {String} key The key of value
+ * @param key {String} key The key of value
+ * @returns {*} value of 'key'
  */
 exports.get = function getValue(key) {
   const data = map.get(getCurrentId());
