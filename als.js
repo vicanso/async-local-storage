@@ -17,6 +17,7 @@ function debug(...args) {
 
 let defaultLinkedTop = false;
 let enabledCreatedAt = true;
+let defaultIgnoreNoneParent = false;
 
 function isUndefined(value) {
   return value === undefined;
@@ -67,6 +68,7 @@ const hooks = asyncHooks.createHook({
       const parent = map.get(parentId);
       if (parent) {
         data.parent = parent;
+        data.parentId = parentId;
       }
     }
     debug(`${id}(${type}) init by ${triggerId}`);
@@ -77,6 +79,12 @@ const hooks = asyncHooks.createHook({
    */
   before: function before(id) {
     currentId = id;
+    if (defaultIgnoreNoneParent) {
+      const data = map.get(id)
+      if (data && data.parent && !data.parent.hasValue) {
+        data.parent = data.parent.parent
+      }
+    }
   },
   /**
    * Remove the data
@@ -108,12 +116,18 @@ exports.currentId = getCurrentId;
 /**
  * Enable the async hook
  */
-exports.enable = () => hooks.enable();
+exports.enable = ({ ignoreNoneParent } = {}) => {
+  defaultIgnoreNoneParent = ignoreNoneParent;
+  return hooks.enable();
+}
 
 /**
  * Disable the async hook
  */
-exports.disable = () => hooks.disable();
+exports.disable = () => {
+  map.clear()
+  return hooks.disable();
+}
 
 /**
  * Get the size of map
@@ -161,6 +175,7 @@ exports.set = function setValue(key, value, linkedTop) {
     data = getTop(data);
   }
   data[key] = value;
+  data.hasValue = true
   return true;
 };
 

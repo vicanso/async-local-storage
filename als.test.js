@@ -11,6 +11,16 @@ const {server, redisClient} = require('./support/server');
 
 const topList = [];
 
+const getParentCount = (data, count = 0) => {
+  if (!data) {
+    return count
+  }
+  if (data.parent) {
+    return getParentCount(data.parent, count + 1)
+  }
+  return count
+}
+
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const randomBytes = () => crypto.randomBytes(8).toString('hex');
 const writeFile = util.promisify(fs.writeFile);
@@ -369,3 +379,55 @@ describe('getFromParent', () => {
 describe('get all data', () => {
   expect(als.getAllData()).toBeDefined();
 });
+
+describe('options ignoreNoneParent', () => {
+  test('loop with out ignoreNoneParent', () => {
+    als.disable()
+    als.enable()
+    expect(als.size()).toBe(0);
+    return new Promise((resolve) => {
+      let count = 0;
+      const loop = () => {
+        const parentCount = getParentCount(als.getCurrentData())
+        expect(parentCount).toBe(count)
+        count += 1;
+        if (count > 10) {
+          resolve();
+        } else {
+          setTimeout(() => {
+            loop()
+          }, 10)
+        }
+      }
+      setTimeout(() => {
+        loop()
+      })
+    })
+  })
+  test('loop with ignoreNoneParent', () => {
+    als.disable()
+    als.enable({ ignoreNoneParent: true })
+    expect(als.size()).toBe(0);
+    return new Promise((resolve) => {
+      let count = 0;
+      const loop = () => {
+        if (count % 3 === 0) {
+          als.set('count', count)
+        }
+        const parentCount = getParentCount(als.getCurrentData())
+        expect(parentCount).toBe(Math.floor((count + 2) / 3))
+        count += 1;
+        if (count > 10) {
+          resolve();
+        } else {
+          setTimeout(() => {
+            loop()
+          }, 10)
+        }
+      }
+      setTimeout(() => {
+        loop()
+      })
+    })
+  })
+})
