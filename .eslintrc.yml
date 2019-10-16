@@ -5,6 +5,7 @@ parserOptions:
   ecmaVersion: 2017
   sourceType: module
 rules:
+  valid-jsdoc: 1
   no-console: 0
   import/no-unresolved: 0
   import/extensions:

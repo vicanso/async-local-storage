@@ -27,7 +27,7 @@ function isUndefined(value) {
  * Get data from itself or parent
  * @param {any} data The map data
  * @param {any} key The key
- * @returns {any}
+ * @returns {any} value
  */
 function get(data, key) {
   /* istanbul ignore if */
@@ -45,6 +45,8 @@ function get(data, key) {
 
 /**
  * Get the top data
+ * @param {object} data data
+ * @returns {object} top parent
  */
 function getTop(data) {
   let result = data;
@@ -76,6 +78,8 @@ const hooks = asyncHooks.createHook({
   },
   /**
    * Set the current id
+   * @param {int} id asyncId
+   * @returns {void}
    */
   before: function before(id) {
     currentId = id;
@@ -88,6 +92,8 @@ const hooks = asyncHooks.createHook({
   },
   /**
    * Remove the data
+   * @param {int} id asyncId
+   * @returns {void}
    */
   destroy: function destroy(id) {
     if (!map.has(id)) {
@@ -100,6 +106,7 @@ const hooks = asyncHooks.createHook({
 
 /**
  * Get the current id
+ * @returns {int} currentId
  */
 function getCurrentId() {
   if (asyncHooks.executionAsyncId) {
@@ -115,6 +122,7 @@ exports.currentId = getCurrentId;
 
 /**
  * Enable the async hook
+ * @returns {AsyncHook} A reference to asyncHook.
  */
 exports.enable = ({ ignoreNoneParent } = {}) => {
   defaultIgnoreNoneParent = ignoreNoneParent;
@@ -123,6 +131,7 @@ exports.enable = ({ ignoreNoneParent } = {}) => {
 
 /**
  * Disable the async hook
+ * @returns {AsyncHook} A reference to asyncHook.
  */
 exports.disable = () => {
   map.clear()
@@ -131,11 +140,13 @@ exports.disable = () => {
 
 /**
  * Get the size of map
+ * @returns {int} size
  */
 exports.size = () => map.size;
 
 /**
  * Enable linked top
+ * @returns {void}
  */
 exports.enableLinkedTop = () => {
   defaultLinkedTop = true;
@@ -143,6 +154,7 @@ exports.enableLinkedTop = () => {
 
 /**
  * Disable linked top
+ * @returns {void}
  */
 exports.disableLinkedTop = () => {
   defaultLinkedTop = false;
@@ -150,10 +162,10 @@ exports.disableLinkedTop = () => {
 
 /**
  * Set the key/value for this score
- * @param {String} key The key of value
- * @param {String} value The value
- * @param {Boolean} linkedTop The value linked to top
- * @returns {Boolean} if success, will return true, otherwise false
+ * @param {string} key The key of value
+ * @param {any} value The value
+ * @param {boolean} [linkedTop] The value linked to top
+ * @returns {boolean} if success, will return true, otherwise false
  */
 exports.set = function setValue(key, value, linkedTop) {
   /* istanbul ignore if */
@@ -181,7 +193,8 @@ exports.set = function setValue(key, value, linkedTop) {
 
 /**
  * Get the value by key
- * @param {String} key The key of value
+ * @param {string} key The key of value
+ * @returns {any} value
  */
 exports.get = function getValue(key) {
   const data = map.get(getCurrentId());
@@ -192,12 +205,14 @@ exports.get = function getValue(key) {
 
 /**
  * 获取当前current data
+ * @returns {object} current data
  */
 exports.getCurrentData = () => map.get(getCurrentId());
 
 /**
  * Get the value by key from parent
- * @param {String} key The key of value
+ * @param {string} key The key of value
+ * @returns {any} value
  */
 exports.getFromParent = key => {
   const currentData = map.get(getCurrentId());
@@ -210,6 +225,7 @@ exports.getFromParent = key => {
 
 /**
  * Remove the data of the current id
+ * @returns {void}
  */
 exports.remove = function removeValue() {
   const id = getCurrentId();
@@ -220,8 +236,8 @@ exports.remove = function removeValue() {
 
 /**
  * Get the use the of id
- * @param {Number} id The trigger id, is optional, default is `als.currentId()`
- * @returns {Number} The use time(ns) of the current id
+ * @param {number} id The trigger id, is optional, default is `als.currentId()`
+ * @returns {number} The use time(ns) of the current id
  */
 exports.use = function getUse(id) {
   const data = map.get(id || getCurrentId());
@@ -234,6 +250,7 @@ exports.use = function getUse(id) {
 
 /**
  * Get the top value
+ * @returns {object} topData
  */
 exports.top = function top() {
   const data = map.get(getCurrentId());
@@ -242,6 +259,7 @@ exports.top = function top() {
 
 /**
  * Set the scope (it will change the top)
+ * @returns {void}
  */
 exports.scope = function scope() {
   const data = map.get(getCurrentId());
@@ -250,6 +268,7 @@ exports.scope = function scope() {
 
 /**
  * Get all data of async locatl storage, please don't modify the data
+ * @returns {map} allData
  */
 exports.getAllData = function getAllData() {
   return map;
@@ -257,6 +276,7 @@ exports.getAllData = function getAllData() {
 
 /**
  * Enable the create time of data
+ * @returns {void}
  */
 exports.enableCreateTime = function enableCreateTime() {
   enabledCreatedAt = true;
@@ -264,6 +284,7 @@ exports.enableCreateTime = function enableCreateTime() {
 
 /**
  * Disable the create time of data
+ * @returns {void}
  */
 exports.disableCreateTime = function disableCreateTime() {
   enabledCreatedAt = false;
