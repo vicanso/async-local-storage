@@ -69,7 +69,7 @@ const hooks = asyncHooks.createHook({
         data.parent = parent;
       }
     }
-    debug(`${id}(${type}) init by ${triggerId}`);
+    debug('%d(%s) init by %d', id, type, triggerId);
     map.set(id, data);
   },
   /**
@@ -85,7 +85,7 @@ const hooks = asyncHooks.createHook({
     if (!map.has(id)) {
       return;
     }
-    debug(`destroy ${id}`);
+    debug('destroy %d', id);
     map.delete(id);
   },
 });
@@ -147,7 +147,7 @@ exports.set = function setValue(key, value, linkedTop) {
     throw new Error("can't set created and parent");
   }
   const id = getCurrentId();
-  debug(`set ${key}:${value} to ${id}`);
+  debug('set %s:%j to %d', key, value, id);
   let data = map.get(id);
   /* istanbul ignore if */
   if (!data) {
@@ -171,7 +171,7 @@ exports.set = function setValue(key, value, linkedTop) {
 exports.get = function getValue(key) {
   const data = map.get(getCurrentId());
   const value = get(data, key);
-  debug(`get ${key}:${value} from ${currentId}`);
+  debug('get %s:%j from %d', key, value, currentId);
   return value;
 };
 
