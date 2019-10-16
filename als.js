@@ -122,6 +122,8 @@ exports.currentId = getCurrentId;
 
 /**
  * Enable the async hook
+ * @param {object} [options] enable options
+ * @param {boolean} [options.ignoreNoneParent = false] ignore no data parent
  * @returns {AsyncHook} A reference to asyncHook.
  */
 exports.enable = ({ ignoreNoneParent } = {}) => {
