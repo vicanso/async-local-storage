@@ -43,6 +43,13 @@ function get(data, key) {
   return value;
 }
 
+const cleanNoDataParent = (data) => {
+  while (data && data.parent && !data.parent.hasValue) {
+    // eslint-disable-next-line no-param-reassign
+    data.parent = data.parent.parent
+  }
+}
+
 /**
  * Get the top data
  * @param {object} data data
@@ -84,10 +91,9 @@ const hooks = asyncHooks.createHook({
   before: function before(id) {
     currentId = id;
     if (defaultIgnoreNoneParent) {
-      const data = map.get(id)
-      if (data && data.parent && !data.parent.hasValue) {
-        data.parent = data.parent.parent
-      }
+      cleanNoDataParent(
+        map.get(id)
+      )
     }
   },
   /**
