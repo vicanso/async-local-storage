@@ -271,7 +271,9 @@ exports.top = function top() {
  */
 exports.scope = function scope() {
   const data = map.get(getCurrentId());
-  delete data.parent;
+  if (data) {
+    delete data.parent;
+  }
 };
 
 /**
