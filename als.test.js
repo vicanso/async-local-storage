@@ -380,6 +380,71 @@ describe('get all data', () => {
   expect(als.getAllData()).toBeDefined();
 });
 
+const sleep = (timeout) => new Promise(
+  (resolve) => setTimeout(resolve, timeout)
+);
+
+const loopTestWhile = async () => {
+  let count = 0;
+  /* eslint-disable no-await-in-loop */
+  while (count < 300) {
+    expect(als.size() < 20)
+    count += 1;
+    await sleep(1)
+    als.scope()
+    als.set('test', count);
+    await sleep(1)
+    expect(als.get('test')).toBe(count)
+  }
+  expect(als.size() < 20)
+}
+
+const loopTestWhileWithOutScope = async () => {
+  let count = 0;
+  /* eslint-disable no-await-in-loop */
+  while (count < 300) {
+    count += 1;
+    expect(als.size() > count)
+    await sleep(1)
+    expect(als.size() > count)
+  }
+}
+
+const loopTest = () => new Promise((resolve) => {
+  let count = 0;
+  const loop = () => {
+    expect(als.size() < 20)
+    count += 1;
+    if (count > 300) {
+      resolve();
+    } else {
+      setTimeout(() => {
+        als.scope();
+        als.set('test', count);
+        expect(als.get('test')).toBe(count)
+        setTimeout(() => {
+          expect(als.get('test')).toBe(count)
+          loop()
+        })
+      })
+    }
+  }
+  setTimeout(() => {
+    loop()
+  })
+})
+
+test('loop', () => {
+  als.disable()
+  als.enable()
+  expect(als.size()).toBe(0);
+  return Promise.all([
+    loopTest(), loopTest(),
+    loopTestWhile(), loopTestWhile(),
+    loopTestWhileWithOutScope()
+  ]);
+})
+
 describe('options ignoreNoneParent', () => {
   test('loop with out ignoreNoneParent', () => {
     als.disable()
