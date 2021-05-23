@@ -1,5 +1,7 @@
 # async-local-storage
 
+!!!Please use [AsyncLocalStorage](https://nodejs.org/dist/latest-v16.x/docs/api/async_hooks.html#async_hooks_class_asynclocalstorage) instead of async-local-storage.
+
 [![Build Status](https://travis-ci.org/vicanso/async-local-storage.svg?branch=master)](https://travis-ci.org/vicanso/async-local-storage)
 [![Coverage Status](https://img.shields.io/coveralls/vicanso/async-local-storage/master.svg?style=flat)](https://coveralls.io/r/vicanso/async-local-storage?branch=master)
 [![npm](http://img.shields.io/npm/v/async-local-storage.svg?style=flat-square)](https://www.npmjs.org/package/async-local-storage)
